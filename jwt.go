@@ -37,7 +37,7 @@ type Config struct {
 	Keys               []string
 	Alg                string
 	OpaHeaders         map[string]string
-	JwtHeaders         map[string]string
+	JwtHeaders         map[string]interface{}
 	JwksHeaders        map[string]string
 	OpaResponseHeaders map[string]string
 	OpaHttpStatusField string
@@ -68,7 +68,7 @@ type JwtPlugin struct {
 	keys               map[string]interface{}
 	alg                string
 	opaHeaders         map[string]string
-	jwtHeaders         map[string]string
+	jwtHeaders         map[string]interface{}
 	jwksHeaders        map[string]string
 	opaResponseHeaders map[string]string
 	opaHttpStatusField string
@@ -414,9 +414,17 @@ func (jwtPlugin *JwtPlugin) CheckToken(request *http.Request, rw http.ResponseWr
 			}
 		}
 		for k, v := range jwtPlugin.jwtHeaders {
-			_, ok := jwtToken.Payload[v]
-			if ok {
-				request.Header.Add(k, fmt.Sprint(jwtToken.Payload[v]))
+			// depends on the inputs here
+			switch v.(type) {
+			case map[string]interface{}:
+				for x, y := range v.(map[string]interface{}) {
+					request.Header.Add(k, fmt.Sprint(jwtToken.Payload[x].(map[string]interface{})[y.(string)]))
+				}
+			default:
+				_, ok := jwtToken.Payload[v.(string)]
+				if ok {
+					request.Header.Add(k, fmt.Sprint(jwtToken.Payload[v.(string)]))
+				}
 			}
 		}
 	}
