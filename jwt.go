@@ -454,6 +454,7 @@ func (jwtPlugin *JwtPlugin) ExtractToken(request *http.Request) (*JWT, error) {
 		return nil, err
 	}
 
+	logInfo(jwtTokenStr)
 	parts := strings.Split(jwtTokenStr, ".")
 	if len(parts) != 3 {
 		logError("Invalid token format, expected 3 parts").
