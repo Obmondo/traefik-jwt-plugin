@@ -94,6 +94,11 @@ spec:
         X-Allowed: allow
       JwtHeaders:
         X-Subject: sub
+      ## map inside a jwt token
+        X-Custom-Header:
+          data: user/role
+        X-Custom-Header2:
+          data: user/department
       OpaResponseHeaders:
         X-Allowed: allow
       OpaHttpStatusField: allow_status_code
